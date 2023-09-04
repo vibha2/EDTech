@@ -52,7 +52,7 @@ exports.sendOTP = async (req,res) => {
 
         //create an entry for DB
         const otpBody = await OTP.create(otpPayload);
-        console.log("otpPayload=> ", otpPayload);
+        console.log("otpBody=> ", otpBody);
 
         //return response successful
         res.status(200).json({
@@ -124,7 +124,7 @@ exports.signUp = async (req,res) => {
 
     }
 
-    //find most recent otp tored fro the user
+    //find most recent otp stored for the user
     const recentOtp = await OTP.find({email}).sort({createdAt:-1}).limit(1);
     console.log("recentOtp=> ",recentOtp);
 
@@ -219,7 +219,7 @@ exports.login = async (req, res) => {
         const payload = {
             email: user.email,
             id: user._id,
-            role: user.role,
+            accountType: user.accountType,
         }
 
         const token = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -234,7 +234,7 @@ exports.login = async (req, res) => {
             //3 days
             httpOnly:true,
         }
-        res.cookie("token", token, options).tatus(200).json({
+        res.cookie("token", token, options).status(200).json({
             success: true,
             token,
             user,
@@ -262,6 +262,26 @@ exports.login = async (req, res) => {
 
 
 //changePassword
+exports.changePassword = async(req, res) => {
+    
+    //get data from req body
+    const {email} = req.body;
+
+    if(!email){
+        return res.status(403).json({
+            success:false,
+            message:"Please Enter Email Address",
+        });
+    }
+
+    //get oldPassword, newPassword, confirmPassword
+    //validation
+    //update password in DB
+    //send mail - Password updated
+    //return response
+
+
+}
 
 
 
