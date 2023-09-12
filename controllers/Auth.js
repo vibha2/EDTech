@@ -275,10 +275,38 @@ exports.changePassword = async(req, res) => {
     }
 
     //get oldPassword, newPassword, confirmPassword
+    const {oldPassword, newPassword, confirmPassword} = req.body;
+
     //validation
+    if(newPassword == confirmPassword)
+    {
+        return res.status(403).json({
+            success:false,
+            message:"Please Enter Same Password",
+        });
+    }
+
     //update password in DB
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await User.findOneAndUpdate( {email: email},
+        {
+            password: hashedPassword,
+        },
+        {
+            new:true,
+        });
+
     //send mail - Password updated
+    await mailSender(email,
+        "Password Changed",
+        `Password Changed Successfully`);
+
+
     //return response
+    return res.status(200).json({
+        success:true,
+        message:"You have changed password successfully",
+    });
 
 
 }
