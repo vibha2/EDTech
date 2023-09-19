@@ -116,3 +116,5 @@ exports.getAllUserDetails = async(req, res) => {
         });
     }
 }
+
+//https://razorpay.com/docs/payments/payment-gateway/web-integration/standard/

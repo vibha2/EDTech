@@ -56,7 +56,7 @@ exports.updateSection = async (req, res) => {
         const { sectionName, sectionId} = req.body
 
         //data validation
-        if(!Section || !sectionId)
+        if(!sectionName || !sectionId)
         {
             return res.status(400).json({
                 success:false,
