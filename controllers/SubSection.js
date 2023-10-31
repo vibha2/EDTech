@@ -1,7 +1,7 @@
 const SubSection = require("../models/SubSection");
 const Section = require("../models/Section");
 const { uploadImageToCloudinary } = require("../utils/imageUploader");
-const { findByIdAndUpdate } = require("../models/Course");
+// const { findByIdAndUpdate } = require("../models/Course");
 
 //create SubSection
 
@@ -126,7 +126,7 @@ exports.deleteSubSection = async(req, res) => {
         const {SubSectionId} = req.params;
 
         //use findByIdAndDelete
-        await SubSection.findByIdAndUpdate(SubSectionId);
+        await SubSection.findByIdAndDelete(SubSectionId);
 
         //return response
         return res.status(200).json({

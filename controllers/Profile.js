@@ -1,5 +1,6 @@
 const Profile = require("../models/Profile");
 const User = require("../models/User");
+const Course = require("../models/Course");
 
 exports.updateProfile = async(req, res) => {
     try{
@@ -96,7 +97,7 @@ exports.getAllUserDetails = async(req, res) => {
     try{
         //get id
         const id = req.user.id;
-
+                                      
         //validation and get user details
         const userdetails = await User.findById(id).populate("additionalDetails").exec();
 
@@ -104,6 +105,7 @@ exports.getAllUserDetails = async(req, res) => {
         return res.status(500).json({
             success:false,
             message:'User Data fetched Successfully',
+            data:userdetails,
         });
 
     }

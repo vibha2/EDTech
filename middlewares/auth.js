@@ -62,7 +62,7 @@ exports.isStudent = async(req, res, next) => {
 }
 
 //isInstructor
-exports.isStudent = async(req, res, next) => {
+exports.isInstructor = async(req, res, next) => {
     try{
         if(req.user.accountType !== "Instructor"){
             return res.tatus(401).json({

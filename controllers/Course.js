@@ -1,5 +1,5 @@
 const Course = require("../models/Course");
-const Tag = require("../models/category");
+const Category = require("../models/category");
 const User = require("../models/User");
 const { uplodImageToCloudinary } = require("../utils/imageUploader");
 
@@ -7,14 +7,14 @@ const { uplodImageToCloudinary } = require("../utils/imageUploader");
 exports.createCourse = async(req, res) => {
     try{
         //fetch data
-        const {courseName, courseDescription, whatYouWillLearn, price, tag} = req.body;
+        const {courseName, courseDescription, whatYouWillLearn, price,category, tag} = req.body;
 
-        //tag is id here, as the type of tg is ObjectId in course model
+        //category is id here, as the type of category is ObjectId in course model
         //get thumbnail
         const thumbnail = req.files.thumbnailImage;
 
         //validation
-        if(!courseName || !courseDescription || !whatYouWillLearn || !price || !tag || !thumbnail )
+        if(!courseName || !courseDescription || !whatYouWillLearn || !price || !category || !tag || !thumbnail )
         {
             return res.status(400).json({
                 success:false,
@@ -37,13 +37,13 @@ exports.createCourse = async(req, res) => {
             });
         }
 
-        //check given tag is valid or not
-        //tag is id here
-        const tagDetails = await Tag.find({tag});
-        if(!tagDetails){
+        //check given category is valid or not
+        //category is id here
+        const categoryDetails = await Category.find({category});
+        if(!categoryDetails){
             return res.status(404).json({
                 success:false,
-                message:'Tag details not found',
+                message:'Category details not found',
             });
         }
 
@@ -57,7 +57,8 @@ exports.createCourse = async(req, res) => {
             instructor: instructorDetails._id,
             whatYouWillLearn,
             price,
-            tag: tagDetails._id,
+            tag,
+            category: categoryDetails._id,
             thumbnail: thumbnailImage.secure_url,
         });
 
@@ -74,7 +75,17 @@ exports.createCourse = async(req, res) => {
             {new:true},
             );
         
-        //update Tag ka schema
+        //update Category ka schema
+        await Category.findByIdAndUpdate(
+            {category},
+            {
+                $push: {
+                    course: newCourse._id,
+                }
+            },
+            {new:true},
+
+        );
 
         //return respone
         return res.status(200).json({
@@ -105,7 +116,7 @@ exports.showAllCourses = async(req, res) => {
             ratingAndReviews:true,
             studentsEnrolled:true,
             })
-            .populate("Intructor")
+            .populate("instructor")
             .exec();
         
         return res.status(200).json({

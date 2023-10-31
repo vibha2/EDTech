@@ -12,6 +12,7 @@ exports.sendOTP = async (req,res) => {
         //fetch email from request body
         const {email} = req.body;
 
+        
         //check if user already exist
         const checkUserPresent = await User.findOne({email});
 
@@ -23,6 +24,7 @@ exports.sendOTP = async (req,res) => {
                 message:'User already registered',
             })
         }
+
 
         //generate otp
         var otp = otpGenerator.generate(6, {
@@ -125,6 +127,7 @@ exports.signUp = async (req,res) => {
     }
 
     //find most recent otp stored for the user
+    // createdAt:-1 sorting by descending order
     const recentOtp = await OTP.find({email}).sort({createdAt:-1}).limit(1);
     console.log("recentOtp=> ",recentOtp);
 
