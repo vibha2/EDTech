@@ -39,7 +39,7 @@ const courseSchema = new mongoose.Schema({
     ref:"Category",
    },
    tag: {
-    type: String,
+    type: [String],
    },
    studentsEnrolled: [
     {
@@ -48,6 +48,14 @@ const courseSchema = new mongoose.Schema({
         ref:"User",
     }
    ],
+   instructions: {
+    type: [String],
+   },
+
+   status: {
+    type: String,
+    enum: ["Draft", "Published"],
+   },
 
     
 });
