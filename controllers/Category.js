@@ -84,15 +84,27 @@ exports.categoryPageDetails = async(req, res) => {
                                  })
                                  .populate("courses")
                                  .exec();
+        let differentCourses =[];
+        for(const category of categoriesExceptSelected)
+        {
+            differentCourses.push(...category.courses);
+        }
 
         //get top selling courses
         //if we have a count that which course is sold how many times so on this basis we can sort thr courses.
+       const allCategories = await Category.find().populate("courses");
+       const allCourses = allCategories.flatMap((category) => category.courses);
+       const mostSellingCourses = allCourses
+            .sort((a,b) => b.sold - a.sold)
+            .slice(0,10);
+       
         //return response
         return res.status(200).json({
             success: true,
             data: {
-                selectedCategory,
-                differentCategories
+                selectedCategory: selectedCategory,
+                differentCategories: differentCategories,
+                mostSellingCourses: mostSellingCourses,
             }
         })
 
