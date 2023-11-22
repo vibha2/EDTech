@@ -1,4 +1,4 @@
-const Category = require("../models/category");
+const Category = require("../models/Category");
 
 //create tag ka handler function
 
@@ -30,7 +30,7 @@ exports.createCategory = async(req,res) => {
 
 
     }catch(error){
-        return res.statu(500).json({
+        return res.status(500).json({
             success:false,
             message:error.message,
         })
@@ -41,11 +41,11 @@ exports.createCategory = async(req,res) => {
 
 exports.showAllcategory = async(req, res) => {
     try{
-        const allCategory = await Category.find({}, {name:true, descripion:true});
+        const allCategory = await Category.find({}, {name:true, description:true});
         res.status(200).json({
             success:true,
             message:"All category returned Successfully",
-            allCategory,
+            data: allCategory,
         });
     }
     catch(error){
@@ -79,7 +79,7 @@ exports.categoryPageDetails = async(req, res) => {
         }
 
         //get courses for different category
-        const differentCategories = await Category.find({
+        const categoriesExceptSelected = await Category.find({
                                     _id: {$ne: categoryId},
                                  })
                                  .populate("courses")

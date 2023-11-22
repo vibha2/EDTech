@@ -10,14 +10,15 @@ exports.createSection = async(req, res) => {
         if(!sectionName || !courseId) {
             return res.status(400).json({
                 success:false,
-                message:'Missing Properties',
+                message:'Missing required Properties',
             });
         }
 
         //create section
-        const newSection = await Section.create({sectionName});
+        const newSection = await Section.create({ sectionName });
 
         //update course with section ObjectID
+        // Add the new section to the course's content array
         const updatedCourseDetails = await Course.findByIdAndUpdate(
             courseId,
             {
@@ -29,6 +30,14 @@ exports.createSection = async(req, res) => {
                 new:true
             },
         )
+        .populate({
+            path: "courseContent",
+            populate: {
+                path: "subSection",
+            },
+        })
+        .exec();
+        
         //h.w: use populate to replace section/sub-sections both in updatedCourseDetails
         console.log("updatedCourseDetails=> ",updatedCourseDetails)
         

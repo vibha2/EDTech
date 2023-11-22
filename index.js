@@ -15,7 +15,7 @@ const cors = require("cors");
 const {cloudinaryConnect} = require("./config/cloudinary");
 const fileUpload = require("express-fileupload");
 const dotenv = require("dotenv");
-const { connection } = require("mongoose");
+// const { connection } = require("mongoose");
 
 dotenv.config();
 const PORT = process.env.PORT || 4000;
@@ -23,7 +23,7 @@ const PORT = process.env.PORT || 4000;
 //database connect
 database.connect();
 
-//midlewares
+//middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -58,6 +58,7 @@ app.get("/", (req, res) => {
     });
 });
 
+//activate the server
 app.listen(PORT, ()=> {
     console.log(`App is running at ${PORT}`)
 });

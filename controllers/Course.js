@@ -1,20 +1,38 @@
 const Course = require("../models/Course");
-const Category = require("../models/category");
+const Category = require("../models/Category");
 const User = require("../models/User");
-const { uplodImageToCloudinary } = require("../utils/imageUploader");
+const { uploadImageToCloudinary } = require("../utils/imageUploader");
 
 //createCourse handler function
 exports.createCourse = async(req, res) => {
     try{
+        // Get user ID from request object
+		const userId = req.user.id;
+
         //fetch data
-        const {courseName, courseDescription, whatYouWillLearn, price,category, tag} = req.body;
+        let {
+            courseName,
+             courseDescription, 
+             whatYouWillLearn, 
+             price,
+             tag,
+             category,
+             status,
+             instructions,
+              } = req.body;
 
         //category is id here, as the type of category is ObjectId in course model
         //get thumbnail
         const thumbnail = req.files.thumbnailImage;
 
         //validation
-        if(!courseName || !courseDescription || !whatYouWillLearn || !price || !category || !tag || !thumbnail )
+        if(!courseName || 
+            !courseDescription ||
+             !whatYouWillLearn || 
+             !price || 
+             !category ||
+             !tag ||
+             !thumbnail )
         {
             return res.status(400).json({
                 success:false,
@@ -22,11 +40,17 @@ exports.createCourse = async(req, res) => {
             });
         }
 
+        if(!status || status === undefined){
+            status = "Draft";
+        }
+
         //check for instructor
         //ye to middleware me check h gya...to why here?
         // check course model, we need intructor id also
-        const userId = req.user.id;
-        const instructorDetails = await User.findById(userId);
+        // const userId = req.user.id;
+        const instructorDetails = await User.findById(userId, {
+            accountType: "Instructor",
+        });
         console.log("instructorDetails=> ",instructorDetails);
         //TODO: Verify that userId and instructorDetails._id are same or different
 
@@ -39,7 +63,7 @@ exports.createCourse = async(req, res) => {
 
         //check given category is valid or not
         //category is id here
-        const categoryDetails = await Category.find({category});
+        const categoryDetails = await Category.find(category);
         if(!categoryDetails){
             return res.status(404).json({
                 success:false,
@@ -57,9 +81,11 @@ exports.createCourse = async(req, res) => {
             instructor: instructorDetails._id,
             whatYouWillLearn,
             price,
-            tag,
+            tag: tag,
             category: categoryDetails._id,
             thumbnail: thumbnailImage.secure_url,
+            status: status,
+            instructions: instructions,
         });
 
         //add the new course to the user schema of Instructor
@@ -74,7 +100,7 @@ exports.createCourse = async(req, res) => {
             },
             {new:true},
             );
-        
+        //Add the new course to the categories
         //update Category ka schema
         await Category.findByIdAndUpdate(
             {category},
@@ -106,9 +132,10 @@ exports.createCourse = async(req, res) => {
 };
 
 //getAllCourses handler function
-exports.showAllCourses = async(req, res) => {
+exports.getAllCourses = async(req, res) => {
     try{
-        const allCourses = await Course.find({},
+        const allCourses = await Course.find(
+            {},
             {courseName:true,
             price:true,
             thumbnail: true,
@@ -163,7 +190,7 @@ exports.getCourseDetails = async(req,res) => {
                 }
             )
             .populate("category")
-            .populate("ratingAndReviews")
+            // .populate("ratingAndReviews")
             .populate({
                 path:"courseContent",
                 populate: {

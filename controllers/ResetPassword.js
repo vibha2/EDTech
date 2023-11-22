@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const mailSender = require("../utils/mailSender") ;
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
 
 //resetPasswordToken: - mail send karne ka kaam ye karre hai
@@ -14,22 +15,25 @@ exports.resetPasswordToken = async(req, res) => {
         if(!user){
             return res.json({
                 success: false,
-                message: 'Your Email is not registered with us'
+                message: `This Email: ${email} is not Registered With Us Enter a Valid Email `,
             });
         }
 
         //generate token
-        const token = crypto.randomUUID();
+        // const token = crypto.randomUUID();
+        const token = crypto.randomBytes(20).toString("hex");
 
         //update user by adding token and expiration time
         const updatedDetails = await User.findOneAndUpdate({email: email},
             {
                 token:token,
-                resetPasswordExpires: Date.now() + 5*60*1000,
+                resetPasswordExpires: Date.now() + 3600000,
             },
             {
                 new:true //updated document return hoga
             });
+
+        console.log("DETAILS", updatedDetails);
 
         //create url
         const url = `http://localhost:3000/update-password/${token}`
@@ -37,13 +41,14 @@ exports.resetPasswordToken = async(req, res) => {
         //send mail containing the url
         await mailSender(email,
                         "Password Rest Link",
-                        `Passord Reset Link: ${url}`);
+                        `Your Link for email verification is ${url}. Please click this url to reset your password.`
+        );
 
 
         //return response
         return res.json({
             success:true,
-            message:'Email sent successfully, please check email and change password',
+            message:'Email sent successfully, please check email and change password to continue further',
         });
     }
     catch(error){
@@ -66,12 +71,12 @@ exports.resetPassword = async(req, res) => {
         if(password !== confirmPassword){
             return res.json({
                 success:false,
-                message:'Password not matching',
+                message:"Password and Confirm Password Does not Match",
             });
         }
 
         //get userdetails from db using token
-        const userDetails = await User.findOne({token: token});
+        const userDetails = await User.findOne({ token: token });
 
         //if no entry - invalid token
         if(!userDetails){
@@ -82,11 +87,11 @@ exports.resetPassword = async(req, res) => {
         }
 
         //token time check
-        if( userDetails.resetPasswordExpires < Date.now() )
+        if( !(userDetails.resetPasswordExpires > Date.now()) )
         {
             return res.json({
                 success: false,
-                message:'Token is expired, please regenerate your token',
+                message:`Token is expired, please regenerate your token`,
             });
         }
 
@@ -122,5 +127,5 @@ exports.resetPassword = async(req, res) => {
         });
     }
 
-}
+};
 

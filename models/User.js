@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema(
+{
     firstName: {
         type: String,
         required:true,
@@ -25,15 +26,25 @@ const userSchema = new mongoose.Schema({
         enum: ["Admin", "Student", "Instructor"],
         required:true,
     },
+    active: {
+        type: Boolean,
+        default: true,
+    },
+    approved: {
+        type: Boolean,
+        default: true,
+    },
     additionalDetails: {
         type: mongoose.Schema.Types.ObjectId,
         required:true,
         ref : "Profile",
     },
-    courses: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref : "Course",
-    },
+    courses: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref : "Course",
+        },
+    ],
     image: {
         type: String,
         required:true,
@@ -48,10 +59,14 @@ const userSchema = new mongoose.Schema({
     {
         type: mongoose.Schema.Types.ObjectId,
         ref: "CourseProgress",
-    }
+    },
     ],
 
-});
+    //Add timestamp for when the document is created and last modified
+},
+{ timestamps: true }
 
-module.exports = mongoose.model("User", userSchema);
+);
+
+module.exports = mongoose.model("user", userSchema);
 

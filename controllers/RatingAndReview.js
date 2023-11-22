@@ -1,9 +1,9 @@
 const RatingAndReview = require("../models/RatingAndReview");
 const Course = require("../models/Course");
-
+const { mongo, default: mongoose } = require("mongoose");
 
 //createRating
-const createRating = async(req, res) => {
+exports.createRating = async(req, res) => {
     try{
     //get user id
     const userId = req.user.id;
@@ -22,7 +22,7 @@ const createRating = async(req, res) => {
 
     if(!courseDetails)
     {
-        return res.statu(404).json({
+        return res.status(404).json({
             success:false,
             message:'Student is not enrolled in the course',
         });
@@ -47,7 +47,7 @@ const createRating = async(req, res) => {
         rating,
         review,
         user: userId,
-        coure: courseId,
+        course: courseId,
     });
 
     //update course with this rating/review
