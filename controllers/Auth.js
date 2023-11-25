@@ -86,7 +86,7 @@ exports.sendOTP = async (req,res) => {
 exports.signUp = async (req,res) => {
 
     try{
-        //data fetch from request ki body
+    //data fetch from request ki body
     const {
         firstName, 
         lastName,
@@ -98,9 +98,14 @@ exports.signUp = async (req,res) => {
         otp
     } = req.body;
 
+
     //validate karlo
-    if(!firstName || !lastName || !email || !password 
-        || !confirmPassword || !otp ){
+    if(!firstName ||
+       !lastName || 
+       !email || 
+       !password ||
+       !confirmPassword || 
+       !otp ){
             return res.status(403).json({
                 succes:false,
                 message:"All fields are required",
@@ -123,18 +128,18 @@ exports.signUp = async (req,res) => {
     if(existingUser)
     {
         return res.status(400).json({
-            succes:false,
+            success:false,
             message:"User is already registered",
         });
-
     }
+
 
     //find most recent otp stored for the user
     // createdAt:-1 sorting by descending order
     const recentOtp = await OTP.find({email}).sort({createdAt:-1}).limit(1);
     console.log("recentOtp=> ",recentOtp);
 
-    if(recentOtp.length == 0)
+    if(recentOtp.length === 0)
     {
         //OTP not found
         return res.status(400).json({
@@ -158,8 +163,7 @@ exports.signUp = async (req,res) => {
     approved === "Intructor"? (approved = false) : (approved = true);
 
 
-    //entry create in DB
-
+    //Create the Additional Profile for User
     const profileDetails = await Profile.create({
         gender:null,
         dateOfBirth: null,
@@ -167,6 +171,7 @@ exports.signUp = async (req,res) => {
         contactNumber: null,
     });
 
+    //entry create in DB
     const user = await User.create({
         firstName,
         lastName,
@@ -176,7 +181,7 @@ exports.signUp = async (req,res) => {
         accountType: accountType,
         approved: approved,
         additionalDetails: profileDetails._id,
-        image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstname} ${lastName}`,                            
+        image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`,                            
     });
 
     //return response
@@ -195,9 +200,6 @@ exports.signUp = async (req,res) => {
         });
 
     }
-
-    
-
 };                                   
 
 
