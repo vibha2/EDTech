@@ -29,13 +29,14 @@ exports.createSubSection = async(req, res) => {
         //create a sub-section
         const SubSectionDetails = await SubSection.create({
             title:title,
-            timeDuration: `${uploadDetails.duration}`,
+            // timeDuration: `${uploadDetails.duration}`,
+            timeDuration: timeDuration,
             description: description,
             videoUrl: uploadDetails.secure_url,
         });
 
         //update section with sub-section ObjectId
-        const updatedSection = await findByIdAndUpdate( 
+        const updatedSection = await Section.findByIdAndUpdate( 
             {
                 _id:sectionId
             },

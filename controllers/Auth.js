@@ -213,7 +213,7 @@ exports.login = async (req, res) => {
     //validation data
     if(!email || !password){
         return res.status(403).json({
-            succes:false,
+            success:false,
             message:"All fields are required, please try again",
         });
     }
@@ -222,7 +222,7 @@ exports.login = async (req, res) => {
     const user = await User.findOne({email}).populate("additionalDetails");
     if(!user){
         return res.status(401).json({
-            succes:false,
+            success:false,
             message:"User is not registered, Please Signup first",
         });
     }
@@ -257,7 +257,7 @@ exports.login = async (req, res) => {
 
     } else {
         return res.status(401).json({
-            succes:false,
+            success:false,
             message:"Password is incorrect",
         });
     }
@@ -265,7 +265,7 @@ exports.login = async (req, res) => {
     }catch(error){
         console.log(error);
         return res.status(500).json({
-            succes:false,
+            success:false,
             message:"Login Failure, please try again",
         });
     }

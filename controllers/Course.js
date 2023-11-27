@@ -63,7 +63,7 @@ exports.createCourse = async(req, res) => {
 
         //check given category is valid or not
         //category is id here
-        const categoryDetails = await Category.find(category);
+        const categoryDetails = await Category.findById(category);
         if(!categoryDetails){
             return res.status(404).json({
                 success:false,
@@ -103,7 +103,7 @@ exports.createCourse = async(req, res) => {
         //Add the new course to the categories
         //update Category ka schema
         await Category.findByIdAndUpdate(
-            {category},
+            {_id: category},
             {
                 $push: {
                     course: newCourse._id,

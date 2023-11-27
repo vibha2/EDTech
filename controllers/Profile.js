@@ -1,53 +1,51 @@
 const Profile = require("../models/Profile");
 const User = require("../models/User");
 const { uploadImageToCloudinary } = require("../utils/imageUploader");
-const Course = require("../models/Course");
+
 
 exports.updateProfile = async(req, res) => {
     try{
         //get data
-        const { dateOfBirth="", about="", contactNumber, gender} = req.body;
+        const { dateOfBirth = "" , about = "" , contactNumber, gender = "" } = req.body;
 
         //get userId
         const id = req.user.id;
-
-        //validation
-        if(!contactNumber || !gender || !id )
-         {
-             return res.status(400).json({
-                 success:false,
-                 message:'All field are required',
-             });
-         }
+        console.log("about=> ",about)
 
         //find profile by id
         const userDetails = await User.findById(id);
-        const profileDetails = await Profile.findById(userDetails.additionalDetails);
-        // const profileId = userDetails.additionalDetails;
-        // const profileDetails = await Profile.findById(profileId);
+        console.log("userDetails=> ", userDetails)
+        const profile = await Profile.findById(userDetails.additionalDetails);
+       
+        
+        profile.about = about;
+        profile.dateOfBirth = dateOfBirth;
+        profile.gender = gender;
+        profile.contactNumber = contactNumber;
 
-        //update profile
-        profileDetails.dateOfBirth = dateOfBirth;
-        profileDetails.about = about;
-        profileDetails.gender = gender;
-        profileDetails.contactNumber = contactNumber;
-
+        // const profilee = await Profile.create({
+        //   about,
+        //   dateOfBirth,
+        //   gender,
+        //   contactNumber
+        // });
+        
         //save the updated profile
-        await profileDetails.save();
-
+        await profile.save();
+        
         //return response
-        return res.status(200).json({
-            success:success,
-            message:'Profile Updated Successfully',
-            profileDetails,
+        return res.json({
+            success:true,
+            message:"Profile Updated Successfully",
+            profile,
         });
 
     }
     catch(error)
     {
+        console.log(error);
         return res.status(500).json({
-            success:false,
-            message:'Internal Server Error',
+            success: false,
             error: error.message,
         });
     }
@@ -108,10 +106,10 @@ exports.getAllUserDetails = async(req, res) => {
                 .populate("additionalDetails")
                 .exec();
 
-        console.log("userDetails=> ",userDetails);
+        console.log("userDetails=> ",userdetails);
         //return response
         return res.status(500).json({
-            success:false,
+            success:true,
             message:'User Data fetched Successfully',
             data:userdetails,
         });
