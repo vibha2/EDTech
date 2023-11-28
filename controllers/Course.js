@@ -11,7 +11,7 @@ exports.createCourse = async(req, res) => {
 
         //fetch data
         let {
-            courseName,
+             courseName,
              courseDescription, 
              whatYouWillLearn, 
              price,
@@ -79,7 +79,7 @@ exports.createCourse = async(req, res) => {
             courseName,
             courseDescription,
             instructor: instructorDetails._id,
-            whatYouWillLearn,
+            whatYouWillLearn: whatYouWillLearn,
             price,
             tag: tag,
             category: categoryDetails._id,
